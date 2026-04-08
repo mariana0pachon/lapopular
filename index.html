@@ -1,0 +1,2605 @@
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Propuesta de desarrollo</title>
+    <style>
+      /* cspell:disable-file */
+      /* webkit printing magic: print all background colors */
+      html {
+        -webkit-print-color-adjust: exact;
+      }
+      * {
+        box-sizing: border-box;
+        -webkit-print-color-adjust: exact;
+      }
+
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+      }
+      @media only screen {
+        body {
+          margin: 2em auto;
+          max-width: 900px;
+          color: rgb(55, 53, 47);
+        }
+      }
+
+      body {
+        line-height: 1.5;
+      }
+
+      a,
+      a.visited {
+        color: inherit;
+        text-decoration: underline;
+      }
+
+      .pdf-relative-link-path {
+        font-size: 80%;
+        color: #444;
+      }
+
+      h1,
+      h2,
+      h3 {
+        letter-spacing: -0.01em;
+        line-height: 1.2;
+        font-weight: 600;
+        margin-bottom: 0;
+      }
+
+      /* Override strong tags inside headings to maintain consistent weight */
+      h1 strong,
+      h2 strong,
+      h3 strong {
+        font-weight: 600;
+      }
+
+      .page-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-top: 0;
+        margin-bottom: 0.75em;
+      }
+
+      h1 {
+        font-size: 1.875rem;
+        margin-top: 1.875rem;
+      }
+
+      h2 {
+        font-size: 1.5rem;
+        margin-top: 1.5rem;
+      }
+
+      h3 {
+        font-size: 1.25rem;
+        margin-top: 1.25rem;
+      }
+
+      .source {
+        border: 1px solid #ddd;
+        border-radius: 3px;
+        padding: 1.5em;
+        word-break: break-all;
+      }
+
+      .callout {
+        border-radius: 10px;
+        padding: 1rem;
+      }
+
+      figure {
+        margin: 1.25em 0;
+        page-break-inside: avoid;
+      }
+
+      figcaption {
+        opacity: 0.5;
+        font-size: 85%;
+        margin-top: 0.5em;
+      }
+
+      mark {
+        background-color: transparent;
+      }
+
+      .indented {
+        padding-left: 1.5em;
+      }
+
+      hr {
+        background: transparent;
+        display: block;
+        width: 100%;
+        height: 1px;
+        visibility: visible;
+        border: none;
+        border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+      }
+
+      img {
+        max-width: 100%;
+      }
+
+      @media only print {
+        img {
+          max-height: 100vh;
+          object-fit: contain;
+        }
+
+        table.collection-content {
+          width: 100%;
+          table-layout: fixed;
+        }
+
+        table.collection-content th,
+        table.collection-content td {
+          overflow-wrap: anywhere;
+        }
+
+        table.collection-content td > .user,
+        table.collection-content td > time {
+          white-space: pre-wrap;
+        }
+      }
+
+      @page {
+        margin: 1in;
+      }
+
+      .collection-content-wrapper {
+        overflow-x: auto;
+      }
+
+      @media only print {
+        .collection-content-wrapper {
+          overflow-x: visible;
+        }
+      }
+
+      .collection-content {
+        font-size: 0.875rem;
+      }
+
+      .collection-content td {
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+
+      .column-list {
+        display: flex;
+        gap: 46px;
+      }
+
+      .column {
+        min-width: 0;
+        overflow: hidden;
+      }
+
+      .column > *:first-child {
+        margin-top: 0;
+      }
+
+      .table_of_contents-item {
+        display: block;
+        font-size: 0.875rem;
+        line-height: 1.3;
+        padding: 0.125rem;
+      }
+
+      .table_of_contents-indent-1 {
+        margin-left: 1.5rem;
+      }
+
+      .table_of_contents-indent-2 {
+        margin-left: 3rem;
+      }
+
+      .table_of_contents-indent-3 {
+        margin-left: 4.5rem;
+      }
+
+      .table_of_contents-link {
+        text-decoration: none;
+        opacity: 0.7;
+        border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+      }
+
+      table,
+      th,
+      td {
+        border: 1px solid rgba(55, 53, 47, 0.09);
+        border-collapse: collapse;
+      }
+
+      table {
+        border-left: none;
+        border-right: none;
+      }
+
+      th,
+      td {
+        font-weight: normal;
+        padding: 0.25em 0.5em;
+        line-height: 1.5;
+        min-height: 1.5em;
+        text-align: left;
+      }
+
+      th {
+        color: rgba(55, 53, 47, 0.6);
+      }
+
+      ol,
+      ul {
+        margin: 0;
+        margin-block-start: 0.6em;
+        margin-block-end: 0.6em;
+      }
+
+      li > ol:first-child,
+      li > ul:first-child {
+        margin-block-start: 0.6em;
+      }
+
+      ul > li {
+        list-style: disc;
+      }
+
+      ul.to-do-list {
+        padding-inline-start: 0;
+      }
+
+      ul.to-do-list > li {
+        list-style: none;
+      }
+
+      .to-do-children-checked {
+        text-decoration: line-through;
+        opacity: 0.375;
+      }
+
+      ul.toggle > li {
+        list-style: none;
+      }
+
+      ul {
+        padding-inline-start: 1.7em;
+      }
+
+      ul > li {
+        padding-left: 0.1em;
+      }
+
+      ol {
+        padding-inline-start: 1.6em;
+      }
+
+      ol.numbered-list.numbered-list-digits-2 {
+        padding-inline-start: 2em;
+      }
+
+      ol.numbered-list.numbered-list-digits-3plus {
+        padding-inline-start: 2.4em;
+      }
+
+      ol > li {
+        padding-left: 0.2em;
+      }
+
+      .mono ol {
+        padding-inline-start: 2em;
+      }
+
+      .mono ol > li {
+        text-indent: -0.4em;
+      }
+
+      .toggle {
+        padding-inline-start: 0em;
+        list-style-type: none;
+      }
+
+      /* Indent toggle children */
+      .toggle > li > details {
+        padding-left: 1.7em;
+      }
+
+      .toggle > li > details > summary {
+        margin-left: -1.1em;
+      }
+
+      .selected-value {
+        display: inline-block;
+        padding: 0 0.5em;
+        background: rgba(206, 205, 202, 0.5);
+        border-radius: 3px;
+        margin-right: 0.5em;
+        margin-top: 0.3em;
+        margin-bottom: 0.3em;
+        white-space: nowrap;
+      }
+
+      .collection-title {
+        display: inline-block;
+        margin-right: 1em;
+      }
+
+      .page-description {
+        margin-bottom: 2em;
+      }
+
+      .simple-table {
+        margin-top: 1em;
+        font-size: 0.875rem;
+        empty-cells: show;
+      }
+      .simple-table td {
+        height: 29px;
+        min-width: 120px;
+      }
+
+      .simple-table th {
+        height: 29px;
+        min-width: 120px;
+      }
+
+      .simple-table-header-color {
+        background: rgb(247, 246, 243);
+        color: black;
+      }
+      .simple-table-header {
+        font-weight: 500;
+      }
+
+      time {
+        opacity: 0.5;
+      }
+
+      .icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        max-width: 1.2em;
+        max-height: 1.2em;
+        text-decoration: none;
+        vertical-align: text-bottom;
+        margin-right: 0.5em;
+      }
+
+      img.icon {
+        border-radius: 3px;
+      }
+
+      .callout img.notion-static-icon {
+        width: 1em;
+        height: 1em;
+      }
+
+      .callout p {
+        margin: 0;
+      }
+
+      .callout h1,
+      .callout h2,
+      .callout h3 {
+        margin: 0 0 0.6rem;
+      }
+
+      .user-icon {
+        width: 1.5em;
+        height: 1.5em;
+        border-radius: 100%;
+        margin-right: 0.5rem;
+      }
+
+      .user-icon-inner {
+        font-size: 0.8em;
+      }
+
+      .text-icon {
+        border: 1px solid #000;
+        text-align: center;
+      }
+
+      .page-cover-image {
+        display: block;
+        object-fit: cover;
+        width: 100%;
+        max-height: 30vh;
+      }
+
+      .page-header-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+      }
+
+      .page-header-icon-with-cover {
+        margin-top: -0.72em;
+        margin-left: 0.07em;
+      }
+
+      .page-header-icon img {
+        border-radius: 3px;
+      }
+
+      .link-to-page {
+        margin: 1em 0;
+        padding: 0;
+        border: none;
+        font-weight: 500;
+      }
+
+      p > .user {
+        opacity: 0.5;
+      }
+
+      td > .user,
+      td > time {
+        white-space: nowrap;
+      }
+
+      input[type="checkbox"] {
+        transform: scale(1.5);
+        margin-right: 0.6em;
+        vertical-align: middle;
+      }
+
+      p {
+        margin-top: 0.5em;
+        margin-bottom: 0.5em;
+      }
+
+      .image {
+        border: none;
+        margin: 1.5em 0;
+        padding: 0;
+        border-radius: 0;
+        text-align: center;
+      }
+
+      .code,
+      code {
+        background: rgba(135, 131, 120, 0.15);
+        border-radius: 3px;
+        padding: 0.2em 0.4em;
+        border-radius: 3px;
+        font-size: 85%;
+        tab-size: 2;
+      }
+
+      code {
+        color: #eb5757;
+      }
+
+      .code {
+        padding: 1.5em 1em;
+      }
+
+      .code-wrap {
+        white-space: pre-wrap;
+        word-break: break-all;
+      }
+
+      .code > code {
+        background: none;
+        padding: 0;
+        font-size: 100%;
+        color: inherit;
+      }
+
+      blockquote {
+        font-size: 1em;
+        margin: 1em 0;
+        padding-left: 1em;
+        border-left: 3px solid rgb(55, 53, 47);
+      }
+
+      blockquote.quote-large {
+        font-size: 1.25em;
+      }
+
+      .bookmark {
+        text-decoration: none;
+        max-height: 8em;
+        padding: 0;
+        display: flex;
+        width: 100%;
+        align-items: stretch;
+      }
+
+      .bookmark-title {
+        font-size: 0.85em;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        height: 1.75em;
+        white-space: nowrap;
+      }
+
+      .bookmark-text {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .bookmark-info {
+        flex: 4 1 180px;
+        padding: 12px 14px 14px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+
+      .bookmark-image {
+        width: 33%;
+        flex: 1 1 180px;
+        display: block;
+        position: relative;
+        object-fit: cover;
+        border-radius: 1px;
+      }
+
+      .bookmark-description {
+        color: rgba(55, 53, 47, 0.6);
+        font-size: 0.75em;
+        overflow: hidden;
+        max-height: 4.5em;
+        word-break: break-word;
+      }
+
+      .bookmark-href {
+        font-size: 0.75em;
+        margin-top: 0.25em;
+      }
+
+      .sans {
+        font-family:
+          ui-sans-serif,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI Variable Display",
+          "Segoe UI",
+          Helvetica,
+          "Apple Color Emoji",
+          "Noto Sans Arabic",
+          "Noto Sans Hebrew",
+          Arial,
+          sans-serif,
+          "Segoe UI Emoji",
+          "Segoe UI Symbol";
+      }
+      .code {
+        font-family:
+          "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono",
+          Courier, monospace;
+      }
+      .serif {
+        font-family: Lyon-Text, Georgia, ui-serif, serif;
+      }
+      .mono {
+        font-family: iawriter-mono, Nitti, Menlo, Courier, monospace;
+      }
+      .pdf .sans {
+        font-family:
+          Inter,
+          ui-sans-serif,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI Variable Display",
+          "Segoe UI",
+          Helvetica,
+          "Apple Color Emoji",
+          "Noto Sans Arabic",
+          "Noto Sans Hebrew",
+          Arial,
+          sans-serif,
+          "Segoe UI Emoji",
+          "Segoe UI Symbol",
+          "Twemoji",
+          "Noto Color Emoji",
+          "Noto Sans CJK JP";
+      }
+      .pdf:lang(zh-CN) .sans {
+        font-family:
+          Inter,
+          ui-sans-serif,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI Variable Display",
+          "Segoe UI",
+          Helvetica,
+          "Apple Color Emoji",
+          "Noto Sans Arabic",
+          "Noto Sans Hebrew",
+          Arial,
+          sans-serif,
+          "Segoe UI Emoji",
+          "Segoe UI Symbol",
+          "Twemoji",
+          "Noto Color Emoji",
+          "Noto Sans CJK SC";
+      }
+      .pdf:lang(zh-TW) .sans {
+        font-family:
+          Inter,
+          ui-sans-serif,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI Variable Display",
+          "Segoe UI",
+          Helvetica,
+          "Apple Color Emoji",
+          "Noto Sans Arabic",
+          "Noto Sans Hebrew",
+          Arial,
+          sans-serif,
+          "Segoe UI Emoji",
+          "Segoe UI Symbol",
+          "Twemoji",
+          "Noto Color Emoji",
+          "Noto Sans CJK TC";
+      }
+      .pdf:lang(ko-KR) .sans {
+        font-family:
+          Inter,
+          ui-sans-serif,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI Variable Display",
+          "Segoe UI",
+          Helvetica,
+          "Apple Color Emoji",
+          "Noto Sans Arabic",
+          "Noto Sans Hebrew",
+          Arial,
+          sans-serif,
+          "Segoe UI Emoji",
+          "Segoe UI Symbol",
+          "Twemoji",
+          "Noto Color Emoji",
+          "Noto Sans CJK KR";
+      }
+      .pdf .code {
+        font-family:
+          Source Code Pro,
+          "SFMono-Regular",
+          Menlo,
+          Consolas,
+          "PT Mono",
+          "Liberation Mono",
+          Courier,
+          monospace,
+          "Twemoji",
+          "Noto Color Emoji",
+          "Noto Sans Mono CJK JP";
+      }
+      .pdf:lang(zh-CN) .code {
+        font-family:
+          Source Code Pro,
+          "SFMono-Regular",
+          Menlo,
+          Consolas,
+          "PT Mono",
+          "Liberation Mono",
+          Courier,
+          monospace,
+          "Twemoji",
+          "Noto Color Emoji",
+          "Noto Sans Mono CJK SC";
+      }
+      .pdf:lang(zh-TW) .code {
+        font-family:
+          Source Code Pro,
+          "SFMono-Regular",
+          Menlo,
+          Consolas,
+          "PT Mono",
+          "Liberation Mono",
+          Courier,
+          monospace,
+          "Twemoji",
+          "Noto Color Emoji",
+          "Noto Sans Mono CJK TC";
+      }
+      .pdf:lang(ko-KR) .code {
+        font-family:
+          Source Code Pro,
+          "SFMono-Regular",
+          Menlo,
+          Consolas,
+          "PT Mono",
+          "Liberation Mono",
+          Courier,
+          monospace,
+          "Twemoji",
+          "Noto Color Emoji",
+          "Noto Sans Mono CJK KR";
+      }
+      .pdf .serif {
+        font-family:
+          PT Serif,
+          Lyon-Text,
+          Georgia,
+          ui-serif,
+          serif,
+          "Twemoji",
+          "Noto Color Emoji",
+          "Noto Serif CJK JP";
+      }
+      .pdf:lang(zh-CN) .serif {
+        font-family:
+          PT Serif,
+          Lyon-Text,
+          Georgia,
+          ui-serif,
+          serif,
+          "Twemoji",
+          "Noto Color Emoji",
+          "Noto Serif CJK SC";
+      }
+      .pdf:lang(zh-TW) .serif {
+        font-family:
+          PT Serif,
+          Lyon-Text,
+          Georgia,
+          ui-serif,
+          serif,
+          "Twemoji",
+          "Noto Color Emoji",
+          "Noto Serif CJK TC";
+      }
+      .pdf:lang(ko-KR) .serif {
+        font-family:
+          PT Serif,
+          Lyon-Text,
+          Georgia,
+          ui-serif,
+          serif,
+          "Twemoji",
+          "Noto Color Emoji",
+          "Noto Serif CJK KR";
+      }
+      .pdf .mono {
+        font-family:
+          PT Mono,
+          iawriter-mono,
+          Nitti,
+          Menlo,
+          Courier,
+          monospace,
+          "Twemoji",
+          "Noto Color Emoji",
+          "Noto Sans Mono CJK JP";
+      }
+      .pdf:lang(zh-CN) .mono {
+        font-family:
+          PT Mono,
+          iawriter-mono,
+          Nitti,
+          Menlo,
+          Courier,
+          monospace,
+          "Twemoji",
+          "Noto Color Emoji",
+          "Noto Sans Mono CJK SC";
+      }
+      .pdf:lang(zh-TW) .mono {
+        font-family:
+          PT Mono,
+          iawriter-mono,
+          Nitti,
+          Menlo,
+          Courier,
+          monospace,
+          "Twemoji",
+          "Noto Color Emoji",
+          "Noto Sans Mono CJK TC";
+      }
+      .pdf:lang(ko-KR) .mono {
+        font-family:
+          PT Mono,
+          iawriter-mono,
+          Nitti,
+          Menlo,
+          Courier,
+          monospace,
+          "Twemoji",
+          "Noto Color Emoji",
+          "Noto Sans Mono CJK KR";
+      }
+      .highlight-default {
+        color: rgba(44, 44, 43, 1);
+      }
+      .highlight-gray {
+        color: rgba(125, 122, 117, 1);
+        fill: rgba(125, 122, 117, 1);
+      }
+      .highlight-brown {
+        color: rgba(159, 118, 90, 1);
+        fill: rgba(159, 118, 90, 1);
+      }
+      .highlight-orange {
+        color: rgba(210, 123, 45, 1);
+        fill: rgba(210, 123, 45, 1);
+      }
+      .highlight-yellow {
+        color: rgba(203, 148, 52, 1);
+        fill: rgba(203, 148, 52, 1);
+      }
+      .highlight-teal {
+        color: rgba(80, 148, 110, 1);
+        fill: rgba(80, 148, 110, 1);
+      }
+      .highlight-blue {
+        color: rgba(56, 125, 201, 1);
+        fill: rgba(56, 125, 201, 1);
+      }
+      .highlight-purple {
+        color: rgba(154, 107, 180, 1);
+        fill: rgba(154, 107, 180, 1);
+      }
+      .highlight-pink {
+        color: rgba(193, 76, 138, 1);
+        fill: rgba(193, 76, 138, 1);
+      }
+      .highlight-red {
+        color: rgba(207, 81, 72, 1);
+        fill: rgba(207, 81, 72, 1);
+      }
+      .highlight-default_background {
+        color: rgba(44, 44, 43, 1);
+      }
+      .highlight-gray_background {
+        background: rgba(42, 28, 0, 0.07);
+      }
+      .highlight-brown_background {
+        background: rgba(139, 46, 0, 0.086);
+      }
+      .highlight-orange_background {
+        background: rgba(224, 101, 1, 0.129);
+      }
+      .highlight-yellow_background {
+        background: rgba(211, 168, 0, 0.137);
+      }
+      .highlight-teal_background {
+        background: rgba(0, 100, 45, 0.09);
+      }
+      .highlight-blue_background {
+        background: rgba(0, 124, 215, 0.094);
+      }
+      .highlight-purple_background {
+        background: rgba(102, 0, 178, 0.078);
+      }
+      .highlight-pink_background {
+        background: rgba(197, 0, 93, 0.086);
+      }
+      .highlight-red_background {
+        background: rgba(223, 22, 0, 0.094);
+      }
+      .block-color-default {
+        color: inherit;
+        fill: inherit;
+      }
+      .block-color-gray {
+        color: rgba(125, 122, 117, 1);
+        fill: rgba(125, 122, 117, 1);
+      }
+      .block-color-brown {
+        color: rgba(159, 118, 90, 1);
+        fill: rgba(159, 118, 90, 1);
+      }
+      .block-color-orange {
+        color: rgba(210, 123, 45, 1);
+        fill: rgba(210, 123, 45, 1);
+      }
+      .block-color-yellow {
+        color: rgba(203, 148, 52, 1);
+        fill: rgba(203, 148, 52, 1);
+      }
+      .block-color-teal {
+        color: rgba(80, 148, 110, 1);
+        fill: rgba(80, 148, 110, 1);
+      }
+      .block-color-blue {
+        color: rgba(56, 125, 201, 1);
+        fill: rgba(56, 125, 201, 1);
+      }
+      .block-color-purple {
+        color: rgba(154, 107, 180, 1);
+        fill: rgba(154, 107, 180, 1);
+      }
+      .block-color-pink {
+        color: rgba(193, 76, 138, 1);
+        fill: rgba(193, 76, 138, 1);
+      }
+      .block-color-red {
+        color: rgba(207, 81, 72, 1);
+        fill: rgba(207, 81, 72, 1);
+      }
+      .block-color-default_background {
+        color: inherit;
+        fill: inherit;
+      }
+      .block-color-gray_background {
+        background: rgba(240, 239, 237, 1);
+      }
+      .block-color-brown_background {
+        background: rgba(245, 237, 233, 1);
+      }
+      .block-color-orange_background {
+        background: rgba(251, 235, 222, 1);
+      }
+      .block-color-yellow_background {
+        background: rgba(249, 243, 220, 1);
+      }
+      .block-color-teal_background {
+        background: rgba(232, 241, 236, 1);
+      }
+      .block-color-blue_background {
+        background: rgba(229, 242, 252, 1);
+      }
+      .block-color-purple_background {
+        background: rgba(243, 235, 249, 1);
+      }
+      .block-color-pink_background {
+        background: rgba(250, 233, 241, 1);
+      }
+      .block-color-red_background {
+        background: rgba(252, 233, 231, 1);
+      }
+      .select-value-color-default {
+        background-color: rgba(42, 28, 0, 0.07);
+      }
+      .select-value-color-gray {
+        background-color: rgba(28, 19, 1, 0.11);
+      }
+      .select-value-color-brown {
+        background-color: rgba(127, 51, 0, 0.156);
+      }
+      .select-value-color-orange {
+        background-color: rgba(196, 88, 0, 0.203);
+      }
+      .select-value-color-yellow {
+        background-color: rgba(209, 156, 0, 0.282);
+      }
+      .select-value-color-green {
+        background-color: rgba(0, 96, 38, 0.156);
+      }
+      .select-value-color-blue {
+        background-color: rgba(0, 118, 217, 0.203);
+      }
+      .select-value-color-purple {
+        background-color: rgba(92, 0, 163, 0.141);
+      }
+      .select-value-color-pink {
+        background-color: rgba(183, 0, 78, 0.152);
+      }
+      .select-value-color-red {
+        background-color: rgba(206, 24, 0, 0.164);
+      }
+
+      .checkbox {
+        display: inline-flex;
+        vertical-align: text-bottom;
+        width: 16;
+        height: 16;
+        background-size: 16px;
+        margin-left: 2px;
+        margin-right: 5px;
+      }
+
+      .checkbox-on {
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+      }
+
+      .checkbox-off {
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+      }
+    </style>
+  </head>
+  <body>
+    <article id="33cca02c-192a-80e8-a792-d76cbd95c546" class="page sans">
+      <header>
+        <h1 class="page-title" dir="auto">Propuesta de desarrollo</h1>
+        <p class="page-description" dir="auto"></p>
+      </header>
+      <div class="page-body">
+        <div style="display: contents" dir="ltr">
+          <table id="33cca02c-192a-80aa-8bfe-e327c694edc6" class="simple-table">
+            <tbody>
+              <div style="display: contents" dir="ltr">
+                <tr id="33cca02c-192a-8021-bdd9-c7d9b2ab0c39">
+                  <th
+                    id="\XPn"
+                    class="block-color-orange simple-table-header"
+                    style="width: 182.33333333333334px"
+                  >
+                    Developer
+                  </th>
+                  <td id="El\]" class="" style="width: 352.328125px">
+                    Mariana Pachón (mariana0pachon@gmail.com)
+                  </td>
+                </tr>
+              </div>
+              <div style="display: contents" dir="ltr">
+                <tr id="33cca02c-192a-8024-801c-e1990cedecb6">
+                  <th
+                    id="\XPn"
+                    class="block-color-orange simple-table-header"
+                    style="width: 182.33333333333334px"
+                  >
+                    Cliente
+                  </th>
+                  <td id="El\]" class="" style="width: 352.328125px">
+                    La Popular
+                  </td>
+                </tr>
+              </div>
+              <div style="display: contents" dir="ltr">
+                <tr id="33cca02c-192a-803d-9d69-f3192ce9c1d8">
+                  <th
+                    id="\XPn"
+                    class="block-color-orange simple-table-header"
+                    style="width: 182.33333333333334px"
+                  >
+                    Proyecto
+                  </th>
+                  <td id="El\]" class="" style="width: 352.328125px">
+                    Sistema de Originación y Recaudación
+                  </td>
+                </tr>
+              </div>
+              <div style="display: contents" dir="ltr">
+                <tr id="33cca02c-192a-8000-81e7-da7b50e4dd00">
+                  <th
+                    id="\XPn"
+                    class="block-color-orange simple-table-header"
+                    style="width: 182.33333333333334px"
+                  >
+                    Fecha
+                  </th>
+                  <td id="El\]" class="" style="width: 352.328125px">
+                    Abril 2026
+                  </td>
+                </tr>
+              </div>
+              <div style="display: contents" dir="ltr">
+                <tr id="33cca02c-192a-80de-9666-e7f07196242e">
+                  <th
+                    id="\XPn"
+                    class="block-color-orange simple-table-header"
+                    style="width: 182.33333333333334px"
+                  >
+                    Versión
+                  </th>
+                  <td id="El\]" class="" style="width: 352.328125px">
+                    v1.0 (MVP)
+                  </td>
+                </tr>
+              </div>
+            </tbody>
+          </table>
+        </div>
+        <div style="display: contents" dir="auto">
+          <p id="33cca02c-192a-80c7-a8b5-fa66229ed464" class=""></p>
+        </div>
+        <div style="display: contents" dir="auto">
+          <details open="">
+            <summary
+              style="
+                font-weight: 600;
+                font-size: 1.5em;
+                line-height: 1.3;
+                margin: 0;
+              "
+            >
+              1. Resumen
+            </summary>
+            <div class="indented">
+              <div style="display: contents" dir="auto">
+                <p id="33cca02c-192a-8060-87d0-fb2e4c059511" class="">
+                  Diseño y desarrollo del MVP de los módulos de
+                  <em>Gestión</em> y <em>Recaudación</em> del programa de
+                  préstamos de viviendas para personas informales por parte de
+                  <em>La Popular</em>.
+                </p>
+              </div>
+              <div style="display: contents" dir="auto">
+                <p id="33cca02c-192a-80d4-88e5-f09eea14be15" class="">
+                  El sistema será una aplicación web con <code>React</code> en
+                  el frontend, <code>NestJS</code> en el backend, y
+                  <code>PostgreSQL</code> como base de datos.
+                </p>
+              </div>
+            </div>
+          </details>
+        </div>
+        <div style="display: contents" dir="auto">
+          <details open="">
+            <summary
+              style="
+                font-weight: 600;
+                font-size: 1.5em;
+                line-height: 1.3;
+                margin: 0;
+              "
+            >
+              2. Scope del proyecto
+            </summary>
+            <div class="indented">
+              <div style="display: contents" dir="auto">
+                <details open="">
+                  <summary
+                    style="
+                      font-weight: 600;
+                      font-size: 1.25em;
+                      line-height: 1.3;
+                      margin: 0;
+                    "
+                  >
+                    2.1 Módulo de Originación
+                  </summary>
+                  <div class="indented">
+                    <div style="display: contents" dir="auto">
+                      <p id="33cca02c-192a-806e-80ee-f7ae6a309df0" class="">
+                        Form accesible desde un QR escaneado en un celular que
+                        permite a parejas enviar la solicitud de un crédito para
+                        la vivienda. Además, los administradores pueden revisar
+                        estas solicitudes.
+                      </p>
+                    </div>
+                    <div style="display: contents" dir="auto">
+                      <h4 id="33cca02c-192a-80b4-b615-cf2ae6671598" class="">
+                        Features
+                      </h4>
+                    </div>
+                    <div style="display: contents" dir="auto">
+                      <ul
+                        id="33cca02c-192a-806e-a9d0-ef441b63efb1"
+                        class="bulleted-list"
+                      >
+                        <li style="list-style-type: disc">
+                          Form web mobile-first accesible por QR
+                        </li>
+                      </ul>
+                    </div>
+                    <div style="display: contents" dir="auto">
+                      <ul
+                        id="33cca02c-192a-8049-8681-ff2595ba003c"
+                        class="bulleted-list"
+                      >
+                        <li style="list-style-type: disc">
+                          Interfaz UI hecha con <code>shadcn/ui</code> para
+                          aprovechar componentes existentes sin necesitar diseño
+                        </li>
+                      </ul>
+                    </div>
+                    <div style="display: contents" dir="auto">
+                      <ul
+                        id="33cca02c-192a-80f5-a03e-d40a8eb43c48"
+                        class="bulleted-list"
+                      >
+                        <li style="list-style-type: disc">
+                          Colores, logo, tipografía y demás reglas de diseño
+                          existentes de <em>La Popular</em>
+                        </li>
+                      </ul>
+                    </div>
+                    <div style="display: contents" dir="auto">
+                      <ul
+                        id="33cca02c-192a-80a4-9ebc-db3cd1acf252"
+                        class="bulleted-list"
+                      >
+                        <li style="list-style-type: disc">
+                          Flujo de 2 pasos para los usuarios:
+                          <div style="display: contents" dir="auto">
+                            <ul
+                              id="33cca02c-192a-8045-a2fe-dd37bbab18d6"
+                              class="bulleted-list"
+                            >
+                              <li style="list-style-type: circle">
+                                titular rellena sus datos en el form:
+                                <div style="display: contents" dir="auto">
+                                  <ul
+                                    id="33cca02c-192a-8025-97d1-c380aa6572e3"
+                                    class="bulleted-list"
+                                  >
+                                    <li style="list-style-type: square">
+                                      nombre, DNI, teléfono, tipo de trabajo,
+                                      rango de ingreso, antiguedad en el oficio,
+                                      dirección, antiguedad en la residencia
+                                    </li>
+                                  </ul>
+                                </div>
+                              </li>
+                            </ul>
+                          </div>
+                          <div style="display: contents" dir="auto">
+                            <ul
+                              id="33cca02c-192a-80cc-bd5a-c2f2de04d6b1"
+                              class="bulleted-list"
+                            >
+                              <li style="list-style-type: circle">
+                                generar un link para enviar por WhatApp a la
+                                pareja
+                              </li>
+                            </ul>
+                          </div>
+                          <div style="display: contents" dir="auto">
+                            <ul
+                              id="33cca02c-192a-8016-9c14-d6dedde33f3e"
+                              class="bulleted-list"
+                            >
+                              <li style="list-style-type: circle">
+                                la pareja completa sus datos en su propio
+                                celular
+                              </li>
+                            </ul>
+                          </div>
+                          <div style="display: contents" dir="auto">
+                            <ul
+                              id="33cca02c-192a-80f6-8675-e9b1cba42a80"
+                              class="bulleted-list"
+                            >
+                              <li style="list-style-type: circle">
+                                los dos consienten a la persistencia de sus
+                                datos en la base de datos
+                              </li>
+                            </ul>
+                          </div>
+                        </li>
+                      </ul>
+                    </div>
+                    <div style="display: contents" dir="auto">
+                      <ul
+                        id="33cca02c-192a-8002-bfc5-ec0b286eefc4"
+                        class="bulleted-list"
+                      >
+                        <li style="list-style-type: disc">
+                          Cálculo automático del score de crédito una vez se
+                          llena el formulario con las reglas de “scoring trucho”
+                        </li>
+                      </ul>
+                    </div>
+                    <div style="display: contents" dir="auto">
+                      <ul
+                        id="33cca02c-192a-809e-b934-ea324db9662d"
+                        class="bulleted-list"
+                      >
+                        <li style="list-style-type: disc">
+                          Persistencia de datos en la base de datos
+                          <code>PostgreSQL</code>
+                        </li>
+                      </ul>
+                    </div>
+                    <div style="display: contents" dir="auto">
+                      <ul
+                        id="33cca02c-192a-80e0-af40-faa3efa1aca0"
+                        class="bulleted-list"
+                      >
+                        <li style="list-style-type: disc">
+                          Dashboard para los admin hecho con
+                          <code>AdminJS</code> para aprovechar componentes
+                          existentes donde los admin pueden:
+                          <div style="display: contents" dir="auto">
+                            <ul
+                              id="33cca02c-192a-8012-b15b-e990c65f9049"
+                              class="bulleted-list"
+                            >
+                              <li style="list-style-type: circle">
+                                Revisar estado de solicitudes:
+                                <code>pre-aprobada</code>,
+                                <code>rechazada</code>, <code>en revisión</code>
+                              </li>
+                            </ul>
+                          </div>
+                          <div style="display: contents" dir="auto">
+                            <ul
+                              id="33cca02c-192a-80d6-a7be-cddca4bfecf2"
+                              class="bulleted-list"
+                            >
+                              <li style="list-style-type: circle">
+                                Aprobar solicitudes en estado
+                                <code>pre-aprobada</code> o
+                                <code>en revisión</code> por el scoring
+                                automático
+                              </li>
+                            </ul>
+                          </div>
+                          <div style="display: contents" dir="auto">
+                            <ul
+                              id="33cca02c-192a-80d6-9902-cd02824af091"
+                              class="bulleted-list"
+                            >
+                              <li style="list-style-type: circle">
+                                Rechazar solicitudes
+                              </li>
+                            </ul>
+                          </div>
+                        </li>
+                      </ul>
+                    </div>
+                    <div style="display: contents" dir="auto">
+                      <ul
+                        id="33cca02c-192a-8086-8d5f-cce988dd8f77"
+                        class="bulleted-list"
+                      >
+                        <li style="list-style-type: disc">
+                          Posibilidad de exportar datos en formato
+                          <code>CSV</code> (spreadsheet) para enviarlo a las
+                          constructoras e incentivar el uso de la app
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </details>
+              </div>
+              <div style="display: contents" dir="auto">
+                <details open="">
+                  <summary
+                    style="
+                      font-weight: 600;
+                      font-size: 1.25em;
+                      line-height: 1.3;
+                      margin: 0;
+                    "
+                  >
+                    2.2 Módulo de Recaudación
+                  </summary>
+                  <div class="indented">
+                    <div style="display: contents" dir="auto">
+                      <p id="33cca02c-192a-8048-9353-ce65d332548d" class="">
+                        Automatizaciones de recordatorios de pago a través de
+                        WhatsApp a clientes con un préstamos activo.
+                      </p>
+                    </div>
+                    <div style="display: contents" dir="auto">
+                      <h4 id="33cca02c-192a-8028-9ef9-c3cd411b8c84" class="">
+                        Features
+                      </h4>
+                    </div>
+                    <div style="display: contents" dir="auto">
+                      <ul
+                        id="33cca02c-192a-80b0-8732-fc0acf735a15"
+                        class="bulleted-list"
+                      >
+                        <li style="list-style-type: disc">
+                          Lectura automática de la base de datos creada en el
+                          Módulo de Originación con información de los pagos
+                          realizados
+                        </li>
+                      </ul>
+                    </div>
+                    <div style="display: contents" dir="auto">
+                      <ul
+                        id="33cca02c-192a-8034-8dbb-c5412c045fde"
+                        class="bulleted-list"
+                      >
+                        <li style="list-style-type: disc">
+                          Envío automatizado por WhatsApp Business a través de
+                          Make para que el admin pueda gestionar los horarios
+                          directamente ahí
+                        </li>
+                      </ul>
+                    </div>
+                    <div style="display: contents" dir="auto">
+                      <ul
+                        id="33cca02c-192a-80d5-9cd4-c22cb0aeeb14"
+                        class="bulleted-list"
+                      >
+                        <li style="list-style-type: disc">
+                          Recordatorios con QR de Yape
+                        </li>
+                      </ul>
+                    </div>
+                    <div style="display: contents" dir="auto">
+                      <ul
+                        id="33cca02c-192a-8058-a536-db2301de8c49"
+                        class="bulleted-list"
+                      >
+                        <li style="list-style-type: disc">
+                          Flujo de los mensajes iniciales:
+                          <div style="display: contents" dir="auto">
+                            <ul
+                              id="33cca02c-192a-8000-ab2d-d943df05bd95"
+                              class="bulleted-list"
+                            >
+                              <li style="list-style-type: circle">
+                                En t-5 días enviar un mensaje inicial
+                              </li>
+                            </ul>
+                          </div>
+                          <div style="display: contents" dir="auto">
+                            <ul
+                              id="33cca02c-192a-806d-a5e2-f0cf5e835897"
+                              class="bulleted-list"
+                            >
+                              <li style="list-style-type: circle">
+                                El día del deadline de pago enviar otro mensaje
+                              </li>
+                            </ul>
+                          </div>
+                        </li>
+                      </ul>
+                    </div>
+                    <div style="display: contents" dir="auto">
+                      <ul
+                        id="33cca02c-192a-80de-9e5b-fd368e1e8884"
+                        class="bulleted-list"
+                      >
+                        <li style="list-style-type: disc">
+                          Dashboard de admin con <code>AdminJS</code> para ver y
+                          actualizar manualmente las fechas y el estado de
+                          pagos: <code>pendiente</code>, <code>pagado</code> ,
+                          <code>moroso</code>
+                        </li>
+                      </ul>
+                    </div>
+                    <div style="display: contents" dir="auto">
+                      <ul
+                        id="33cca02c-192a-80ef-8b4f-c7664ad742f4"
+                        class="bulleted-list"
+                      >
+                        <li style="list-style-type: disc">
+                          Filtro y sorting de usuarios en el dashboard de Admin
+                        </li>
+                      </ul>
+                    </div>
+                    <div style="display: contents" dir="auto">
+                      <ul
+                        id="33cca02c-192a-8045-957a-f29488ba0b43"
+                        class="bulleted-list"
+                      >
+                        <li style="list-style-type: disc">
+                          Envío de mensajes a clientes en estado
+                          <code>moroso</code> con un link de pago de Culqui
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </details>
+              </div>
+              <div style="display: contents" dir="auto">
+                <details open="">
+                  <summary
+                    style="
+                      font-weight: 600;
+                      font-size: 1.25em;
+                      line-height: 1.3;
+                      margin: 0;
+                    "
+                  >
+                    2.3 Tech Stack
+                  </summary>
+                  <div class="indented">
+                    <div style="display: contents" dir="ltr">
+                      <table
+                        id="33cca02c-192a-809a-8f99-f541f8e11f6a"
+                        class="simple-table"
+                      >
+                        <thead class="simple-table-header">
+                          <div style="display: contents" dir="ltr">
+                            <tr id="33cca02c-192a-8060-b465-dfd7beafecea">
+                              <th
+                                id="oHJC"
+                                class="block-color-orange simple-table-header"
+                                style="width: 149.66666666666666px"
+                              >
+                                Layer
+                              </th>
+                              <th
+                                id=";@IM"
+                                class="block-color-orange simple-table-header"
+                                style="width: 184.6640625px"
+                              >
+                                Stack
+                              </th>
+                              <th
+                                id="zRfi"
+                                class="block-color-orange simple-table-header"
+                                style="width: 279.6640625px"
+                              >
+                                Beneficios
+                              </th>
+                            </tr>
+                          </div>
+                        </thead>
+                        <tbody>
+                          <div style="display: contents" dir="ltr">
+                            <tr id="33cca02c-192a-80f8-9d73-c41197404a7b">
+                              <td
+                                id="oHJC"
+                                class=""
+                                style="width: 149.66666666666666px"
+                              >
+                                Frontend
+                              </td>
+                              <td
+                                id=";@IM"
+                                class=""
+                                style="width: 184.6640625px"
+                              >
+                                <code>React</code>+ <code>TypeScript</code> +
+                                <code>Vite</code> + <code>shadcn/ui</code>
+                              </td>
+                              <td
+                                id="zRfi"
+                                class=""
+                                style="width: 279.6640625px"
+                              >
+                                Component library que ahorra la necesidad de un
+                                diseñador
+                              </td>
+                            </tr>
+                          </div>
+                          <div style="display: contents" dir="ltr">
+                            <tr id="33cca02c-192a-808d-8c18-f1676d2034f0">
+                              <td
+                                id="oHJC"
+                                class=""
+                                style="width: 149.66666666666666px"
+                              >
+                                Backend
+                              </td>
+                              <td
+                                id=";@IM"
+                                class=""
+                                style="width: 184.6640625px"
+                              >
+                                <code>Nest.js</code> + <code>TypeORM</code>
+                              </td>
+                              <td
+                                id="zRfi"
+                                class=""
+                                style="width: 279.6640625px"
+                              >
+                                REST API, integración con WhatsApp API y Culqui
+                              </td>
+                            </tr>
+                          </div>
+                          <div style="display: contents" dir="ltr">
+                            <tr id="33cca02c-192a-80f6-81b2-dfdc9dfb5cfa">
+                              <td
+                                id="oHJC"
+                                class=""
+                                style="width: 149.66666666666666px"
+                              >
+                                Base de datos
+                              </td>
+                              <td
+                                id=";@IM"
+                                class=""
+                                style="width: 184.6640625px"
+                              >
+                                <code>PostgreSQL</code>
+                              </td>
+                              <td
+                                id="zRfi"
+                                class=""
+                                style="width: 279.6640625px"
+                              >
+                                Robust
+                              </td>
+                            </tr>
+                          </div>
+                          <div style="display: contents" dir="ltr">
+                            <tr id="33cca02c-192a-8067-8b4d-c55bcb5d152c">
+                              <td
+                                id="oHJC"
+                                class=""
+                                style="width: 149.66666666666666px"
+                              >
+                                Dashboard admin
+                              </td>
+                              <td
+                                id=";@IM"
+                                class=""
+                                style="width: 184.6640625px"
+                              >
+                                <code>AdminJS</code>
+                              </td>
+                              <td
+                                id="zRfi"
+                                class=""
+                                style="width: 279.6640625px"
+                              >
+                                Se monta sobre la base de datos directamente,
+                                component library sin diseñador
+                              </td>
+                            </tr>
+                          </div>
+                          <div style="display: contents" dir="ltr">
+                            <tr id="33cca02c-192a-802d-8f49-cf50ee95be6c">
+                              <td
+                                id="oHJC"
+                                class=""
+                                style="width: 149.66666666666666px"
+                              >
+                                Messaging
+                              </td>
+                              <td
+                                id=";@IM"
+                                class=""
+                                style="width: 184.6640625px"
+                              >
+                                <code>WhatsApp Business API</code> +
+                                <code>Make</code>
+                              </td>
+                              <td
+                                id="zRfi"
+                                class=""
+                                style="width: 279.6640625px"
+                              >
+                                Envíos programables sin código
+                              </td>
+                            </tr>
+                          </div>
+                          <div style="display: contents" dir="ltr">
+                            <tr id="33cca02c-192a-804f-b02d-ed9d9cb17e84">
+                              <td
+                                id="oHJC"
+                                class=""
+                                style="width: 149.66666666666666px"
+                              >
+                                Cobros
+                              </td>
+                              <td
+                                id=";@IM"
+                                class=""
+                                style="width: 184.6640625px"
+                              >
+                                <code>Yape</code> + <code>Culqui</code>
+                              </td>
+                              <td
+                                id="zRfi"
+                                class=""
+                                style="width: 279.6640625px"
+                              >
+                                Acorde con el mercado en Perú
+                              </td>
+                            </tr>
+                          </div>
+                          <div style="display: contents" dir="ltr">
+                            <tr id="33cca02c-192a-8068-8fa3-f51fe225dd65">
+                              <td
+                                id="oHJC"
+                                class=""
+                                style="width: 149.66666666666666px"
+                              >
+                                Hosting
+                              </td>
+                              <td
+                                id=";@IM"
+                                class=""
+                                style="width: 184.6640625px"
+                              >
+                                <code>Netlify</code>
+                              </td>
+                              <td
+                                id="zRfi"
+                                class=""
+                                style="width: 279.6640625px"
+                              >
+                                Fácil, barato
+                              </td>
+                            </tr>
+                          </div>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </details>
+              </div>
+            </div>
+          </details>
+        </div>
+        <div style="display: contents" dir="auto">
+          <details open="">
+            <summary
+              style="
+                font-weight: 600;
+                font-size: 1.5em;
+                line-height: 1.3;
+                margin: 0;
+              "
+            >
+              3. Deliverables
+            </summary>
+            <div class="indented">
+              <div style="display: contents" dir="ltr">
+                <table
+                  id="33cca02c-192a-80e5-a85e-f5c69541bb91"
+                  class="simple-table"
+                >
+                  <thead class="simple-table-header">
+                    <div style="display: contents" dir="ltr">
+                      <tr id="33cca02c-192a-80a1-8fd3-c7f66ed8315d">
+                        <th
+                          id="qYbY"
+                          class="block-color-orange simple-table-header"
+                          style="width: 163.328125px"
+                        >
+                          Deliverable
+                        </th>
+                        <th
+                          id=";}Q~"
+                          class="block-color-orange simple-table-header"
+                          style="width: 338.328125px"
+                        >
+                          Descripción
+                        </th>
+                      </tr>
+                    </div>
+                  </thead>
+                  <tbody>
+                    <div style="display: contents" dir="ltr">
+                      <tr id="33cca02c-192a-8020-b2ae-c2687d487bca">
+                        <td id="qYbY" class="" style="width: 163.328125px">
+                          Codebase
+                        </td>
+                        <td id=";}Q~" class="" style="width: 338.328125px">
+                          Repositorio privado de <code>Github</code>
+                        </td>
+                      </tr>
+                    </div>
+                    <div style="display: contents" dir="ltr">
+                      <tr id="33cca02c-192a-8002-884a-f2eccf18e19c">
+                        <td id="qYbY" class="" style="width: 163.328125px">
+                          Base de datos
+                        </td>
+                        <td id=";}Q~" class="" style="width: 338.328125px">
+                          Secrets e información necesaria para acceder
+                        </td>
+                      </tr>
+                    </div>
+                    <div style="display: contents" dir="ltr">
+                      <tr id="33cca02c-192a-802c-bc27-dbc936a65e14">
+                        <td id="qYbY" class="" style="width: 163.328125px">
+                          Admin dashboard
+                        </td>
+                        <td id=";}Q~" class="" style="width: 338.328125px">
+                          UI y claves para gestionar usuarios
+                        </td>
+                      </tr>
+                    </div>
+                    <div style="display: contents" dir="ltr">
+                      <tr id="33cca02c-192a-805a-8c05-ff4ed28c4248">
+                        <td id="qYbY" class="" style="width: 163.328125px">
+                          Form de Originación
+                        </td>
+                        <td id=";}Q~" class="" style="width: 338.328125px">
+                          Web mobile-first desplegada accesible por QR estático
+                        </td>
+                      </tr>
+                    </div>
+                    <div style="display: contents" dir="ltr">
+                      <tr id="33cca02c-192a-8099-951f-ff1b7acffa8a">
+                        <td id="qYbY" class="" style="width: 163.328125px">
+                          Automatizaciones de WhatsApp
+                        </td>
+                        <td id=";}Q~" class="" style="width: 338.328125px">
+                          Scheduled jobs para enviar recordatorios de pago
+                        </td>
+                      </tr>
+                    </div>
+                    <div style="display: contents" dir="ltr">
+                      <tr id="33cca02c-192a-80f6-bdbb-db7c2a3f8156">
+                        <td id="qYbY" class="" style="width: 163.328125px">
+                          Integración de Culqui
+                        </td>
+                        <td id=";}Q~" class="" style="width: 338.328125px">
+                          Generar links y enviar automáticamente
+                        </td>
+                      </tr>
+                    </div>
+                    <div style="display: contents" dir="ltr">
+                      <tr id="33cca02c-192a-8037-9c5f-f2f81b218a33">
+                        <td id="qYbY" class="" style="width: 163.328125px">
+                          Documentación
+                        </td>
+                        <td id=";}Q~" class="" style="width: 338.328125px">
+                          Instrucciones para los admin
+                        </td>
+                      </tr>
+                    </div>
+                    <div style="display: contents" dir="ltr">
+                      <tr id="33cca02c-192a-8090-891d-ce0e9448c31d">
+                        <td id="qYbY" class="" style="width: 163.328125px">
+                          Despliegue
+                        </td>
+                        <td id=";}Q~" class="" style="width: 338.328125px">
+                          Web en producción funcionando
+                        </td>
+                      </tr>
+                    </div>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </details>
+        </div>
+        <div style="display: contents" dir="auto">
+          <details open="">
+            <summary
+              style="
+                font-weight: 600;
+                font-size: 1.5em;
+                line-height: 1.3;
+                margin: 0;
+              "
+            >
+              4. Cronograma
+            </summary>
+            <div class="indented">
+              <div style="display: contents" dir="ltr">
+                <table
+                  id="33cca02c-192a-80a8-bf1a-ccd8b5a3b817"
+                  class="simple-table"
+                >
+                  <tbody>
+                    <div style="display: contents" dir="ltr">
+                      <tr id="33cca02c-192a-8026-a803-eb9659428a91">
+                        <th
+                          id="eks&lt;"
+                          class="block-color-orange simple-table-header"
+                          style="width: 162.33333333333334px"
+                        >
+                          Semana 1
+                        </th>
+                        <td
+                          id="C{Ii"
+                          class=""
+                          style="width: 162.33333333333334px"
+                        >
+                          Originación (Users)
+                        </td>
+                        <td id="&lt;Q]S" class="" style="width: 204.328125px">
+                          Formulario QR, modelo de datos, scoring, flujo de link
+                          para la pareja
+                        </td>
+                      </tr>
+                    </div>
+                    <div style="display: contents" dir="ltr">
+                      <tr id="33cca02c-192a-80ae-82e2-da6a31962034">
+                        <th
+                          id="eks&lt;"
+                          class="block-color-orange simple-table-header"
+                          style="width: 162.33333333333334px"
+                        >
+                          Semana 2
+                        </th>
+                        <td
+                          id="C{Ii"
+                          class=""
+                          style="width: 162.33333333333334px"
+                        >
+                          Originación (Admin)
+                        </td>
+                        <td id="&lt;Q]S" class="" style="width: 204.328125px">
+                          AdminJS configurado, aprobación/rechazo
+                        </td>
+                      </tr>
+                    </div>
+                    <div style="display: contents" dir="ltr">
+                      <tr id="33cca02c-192a-8029-b06a-e39bbdc2bf52">
+                        <th
+                          id="eks&lt;"
+                          class="block-color-orange simple-table-header"
+                          style="width: 162.33333333333334px"
+                        >
+                          Semana 3
+                        </th>
+                        <td
+                          id="C{Ii"
+                          class=""
+                          style="width: 162.33333333333334px"
+                        >
+                          Recaudación (Core)
+                        </td>
+                        <td id="&lt;Q]S" class="" style="width: 204.328125px">
+                          Jobs de WhatsApp configurados en Make
+                        </td>
+                      </tr>
+                    </div>
+                    <div style="display: contents" dir="ltr">
+                      <tr id="33cca02c-192a-8035-b5a0-f5f0972c7c14">
+                        <th
+                          id="eks&lt;"
+                          class="block-color-orange simple-table-header"
+                          style="width: 162.33333333333334px"
+                        >
+                          Semana 4
+                        </th>
+                        <td
+                          id="C{Ii"
+                          class=""
+                          style="width: 162.33333333333334px"
+                        >
+                          Recaudación (MVP) y cierre
+                        </td>
+                        <td id="&lt;Q]S" class="" style="width: 204.328125px">
+                          AdminJS para actualizar cobros, integración de Culqui,
+                          testing, deploy
+                        </td>
+                      </tr>
+                    </div>
+                  </tbody>
+                </table>
+              </div>
+              <div style="display: contents" dir="auto">
+                <p id="33cca02c-192a-8016-8dc6-fae6e6ea1257" class="">
+                  Tiempo estimado: 100 horas de desarrollo.
+                </p>
+              </div>
+            </div>
+          </details>
+        </div>
+        <div style="display: contents" dir="auto">
+          <details open="">
+            <summary
+              style="
+                font-weight: 600;
+                font-size: 1.5em;
+                line-height: 1.3;
+                margin: 0;
+              "
+            >
+              5. Inversión
+            </summary>
+            <div class="indented">
+              <div style="display: contents" dir="ltr">
+                <table
+                  id="33cca02c-192a-8015-89d5-c615bd9294ea"
+                  class="simple-table"
+                >
+                  <thead class="simple-table-header">
+                    <div style="display: contents" dir="ltr">
+                      <tr id="33cca02c-192a-80e9-b5a3-d9bef3ea7086">
+                        <th
+                          id="s~~@"
+                          class="block-color-orange simple-table-header"
+                          style="width: 231.328125px"
+                        >
+                          Módulo
+                        </th>
+                        <th
+                          id="nJc}"
+                          class="block-color-orange simple-table-header"
+                          style="width: 162.33333333333334px"
+                        >
+                          Horas de desarrollo
+                        </th>
+                      </tr>
+                    </div>
+                  </thead>
+                  <tbody>
+                    <div style="display: contents" dir="ltr">
+                      <tr id="33cca02c-192a-80a4-8682-d4b8c77986ea">
+                        <td id="s~~@" class="" style="width: 231.328125px">
+                          Originación (completo)
+                        </td>
+                        <td
+                          id="nJc}"
+                          class=""
+                          style="width: 162.33333333333334px"
+                        >
+                          40-50 horas
+                        </td>
+                      </tr>
+                    </div>
+                    <div style="display: contents" dir="ltr">
+                      <tr id="33cca02c-192a-802c-a500-ec7d40f77910">
+                        <td id="s~~@" class="" style="width: 231.328125px">
+                          Recaudación (completo)
+                        </td>
+                        <td
+                          id="nJc}"
+                          class=""
+                          style="width: 162.33333333333334px"
+                        >
+                          30-40 horas
+                        </td>
+                      </tr>
+                    </div>
+                    <div style="display: contents" dir="ltr">
+                      <tr id="33cca02c-192a-8096-981f-c47993cfb15d">
+                        <td id="s~~@" class="" style="width: 231.328125px">
+                          Buffer para revisiones, imprevistos, etc
+                        </td>
+                        <td
+                          id="nJc}"
+                          class=""
+                          style="width: 162.33333333333334px"
+                        >
+                          10 horas
+                        </td>
+                      </tr>
+                    </div>
+                    <div style="display: contents" dir="ltr">
+                      <tr id="33cca02c-192a-8084-9274-ec4479ce7c5a">
+                        <td
+                          id="s~~@"
+                          class="block-color-teal_background"
+                          style="width: 231.328125px"
+                        >
+                          Total
+                        </td>
+                        <td
+                          id="nJc}"
+                          class="block-color-teal_background"
+                          style="width: 162.33333333333334px"
+                        >
+                          80-100 horas
+                        </td>
+                      </tr>
+                    </div>
+                  </tbody>
+                </table>
+              </div>
+              <div style="display: contents" dir="auto">
+                <h2
+                  id="33cca02c-192a-80e1-b2a9-ef6d4314144d"
+                  class="block-color-teal"
+                >
+                  Precio fijo total del proyecto: USD $6,500 USD
+                </h2>
+              </div>
+              <div style="display: contents" dir="auto">
+                <p id="33cca02c-192a-803e-a5b3-f91fa48362c9" class="">
+                  <em
+                    >El precio incluye únicamente el desarrollo, no incluye los
+                    costos del hosting, WhatsApp Business API, Culqui, etc.</em
+                  >
+                </p>
+              </div>
+            </div>
+          </details>
+        </div>
+        <div style="display: contents" dir="auto">
+          <details open="">
+            <summary
+              style="
+                font-weight: 600;
+                font-size: 1.5em;
+                line-height: 1.3;
+                margin: 0;
+              "
+            >
+              6. Condiciones de pago
+            </summary>
+            <div class="indented">
+              <div style="display: contents" dir="ltr">
+                <table
+                  id="33cca02c-192a-8006-b0f0-fed697f0f985"
+                  class="simple-table"
+                >
+                  <thead class="simple-table-header">
+                    <div style="display: contents" dir="ltr">
+                      <tr id="33cca02c-192a-80f2-bb1d-f7d2a167d4af">
+                        <th
+                          id="AxsO"
+                          class="block-color-orange simple-table-header"
+                          style="width: 162.33333333333334px"
+                        ></th>
+                        <th
+                          id="L[si"
+                          class="block-color-orange simple-table-header"
+                          style="width: 162.33333333333334px"
+                        >
+                          Porcentaje
+                        </th>
+                        <th
+                          id="~l~T"
+                          class="block-color-orange simple-table-header"
+                          style="width: 162.33333333333334px"
+                        >
+                          Monto USD
+                        </th>
+                      </tr>
+                    </div>
+                  </thead>
+                  <tbody>
+                    <div style="display: contents" dir="ltr">
+                      <tr id="33cca02c-192a-8033-aa96-c97af79ce961">
+                        <td
+                          id="AxsO"
+                          class=""
+                          style="width: 162.33333333333334px"
+                        >
+                          Firma del contrato
+                        </td>
+                        <td
+                          id="L[si"
+                          class=""
+                          style="width: 162.33333333333334px"
+                        >
+                          40%
+                        </td>
+                        <td
+                          id="~l~T"
+                          class=""
+                          style="width: 162.33333333333334px"
+                        >
+                          $2,600
+                        </td>
+                      </tr>
+                    </div>
+                    <div style="display: contents" dir="ltr">
+                      <tr id="33cca02c-192a-80d9-8714-ed66af7adb34">
+                        <td
+                          id="AxsO"
+                          class=""
+                          style="width: 162.33333333333334px"
+                        >
+                          Entrega del módulo de originación completo
+                        </td>
+                        <td
+                          id="L[si"
+                          class=""
+                          style="width: 162.33333333333334px"
+                        >
+                          30%
+                        </td>
+                        <td
+                          id="~l~T"
+                          class=""
+                          style="width: 162.33333333333334px"
+                        >
+                          $1,950
+                        </td>
+                      </tr>
+                    </div>
+                    <div style="display: contents" dir="ltr">
+                      <tr id="33cca02c-192a-805d-8e75-d79f8980a9a7">
+                        <td
+                          id="AxsO"
+                          class=""
+                          style="width: 162.33333333333334px"
+                        >
+                          Entrega final y despliegue en producción
+                        </td>
+                        <td
+                          id="L[si"
+                          class=""
+                          style="width: 162.33333333333334px"
+                        >
+                          30%
+                        </td>
+                        <td
+                          id="~l~T"
+                          class=""
+                          style="width: 162.33333333333334px"
+                        >
+                          $1,950
+                        </td>
+                      </tr>
+                    </div>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </details>
+        </div>
+        <div style="display: contents" dir="auto">
+          <details open="">
+            <summary
+              style="
+                font-weight: 600;
+                font-size: 1.5em;
+                line-height: 1.3;
+                margin: 0;
+              "
+            >
+              7. Metodología de trabajo
+            </summary>
+            <div class="indented">
+              <div style="display: contents" dir="auto">
+                <p id="33cca02c-192a-805b-9178-eba456404967" class="">
+                  Reuniones semanales que incluyen demo y resolución de dudas
+                  por las dos partes.
+                </p>
+              </div>
+              <div style="display: contents" dir="ltr">
+                <table
+                  id="33cca02c-192a-8072-9f51-d73b29003b9e"
+                  class="simple-table"
+                >
+                  <tbody>
+                    <div style="display: contents" dir="ltr">
+                      <tr id="33cca02c-192a-8085-9263-fcd52945ad16">
+                        <td
+                          id="pzsq"
+                          class="block-color-orange"
+                          style="width: 162.33333333333334px"
+                        >
+                          Reunión
+                        </td>
+                        <td
+                          id="QWnJ"
+                          class="block-color-orange"
+                          style="width: 162.33333333333334px"
+                        >
+                          Módulo o enfoque principal
+                        </td>
+                        <td
+                          id="kz[o"
+                          class="block-color-orange"
+                          style="width: 239.328125px"
+                        >
+                          Agenda
+                        </td>
+                      </tr>
+                    </div>
+                    <div style="display: contents" dir="ltr">
+                      <tr id="33cca02c-192a-806e-9196-dbb8a84dabca">
+                        <td
+                          id="pzsq"
+                          class=""
+                          style="width: 162.33333333333334px"
+                        >
+                          Kickoff (Semana 1)
+                        </td>
+                        <td
+                          id="QWnJ"
+                          class=""
+                          style="width: 162.33333333333334px"
+                        >
+                          Iniciar el proyecto
+                        </td>
+                        <td id="kz[o" class="" style="width: 239.328125px">
+                          Revisión del scope, resolver dudas, entrega de assets
+                          y accessos
+                        </td>
+                      </tr>
+                    </div>
+                    <div style="display: contents" dir="ltr">
+                      <tr id="33cca02c-192a-80c6-ab80-f028e208fcf0">
+                        <td
+                          id="pzsq"
+                          class=""
+                          style="width: 162.33333333333334px"
+                        >
+                          Demo 1 (Semana 2)
+                        </td>
+                        <td
+                          id="QWnJ"
+                          class=""
+                          style="width: 162.33333333333334px"
+                        >
+                          Originación (User)
+                        </td>
+                        <td id="kz[o" class="" style="width: 239.328125px">
+                          Demo del form QR funcionando para 2 personas
+                        </td>
+                      </tr>
+                    </div>
+                    <div style="display: contents" dir="ltr">
+                      <tr id="33cca02c-192a-80b5-a36b-c17e4ba76b06">
+                        <td
+                          id="pzsq"
+                          class=""
+                          style="width: 162.33333333333334px"
+                        >
+                          Demo 2 (Semana 3)
+                        </td>
+                        <td
+                          id="QWnJ"
+                          class=""
+                          style="width: 162.33333333333334px"
+                        >
+                          Originación (Admin)
+                        </td>
+                        <td id="kz[o" class="" style="width: 239.328125px">
+                          Demo del admin panel y exportar datos
+                        </td>
+                      </tr>
+                    </div>
+                    <div style="display: contents" dir="ltr">
+                      <tr id="33cca02c-192a-8040-b061-fb9b0511f5a6">
+                        <td
+                          id="pzsq"
+                          class=""
+                          style="width: 162.33333333333334px"
+                        >
+                          Demo 3 (Semana 4)
+                        </td>
+                        <td
+                          id="QWnJ"
+                          class=""
+                          style="width: 162.33333333333334px"
+                        >
+                          Recaudación
+                        </td>
+                        <td id="kz[o" class="" style="width: 239.328125px">
+                          Demo de recordatorios
+                        </td>
+                      </tr>
+                    </div>
+                    <div style="display: contents" dir="ltr">
+                      <tr id="33cca02c-192a-80de-9fd5-f214f25760c6">
+                        <td
+                          id="pzsq"
+                          class=""
+                          style="width: 162.33333333333334px"
+                        >
+                          Entrega final
+                        </td>
+                        <td
+                          id="QWnJ"
+                          class=""
+                          style="width: 162.33333333333334px"
+                        >
+                          Cierre
+                        </td>
+                        <td id="kz[o" class="" style="width: 239.328125px">
+                          Revisión de todo el sistema, ajustes y deploy
+                        </td>
+                      </tr>
+                    </div>
+                  </tbody>
+                </table>
+              </div>
+              <div style="display: contents" dir="auto">
+                <p id="33cca02c-192a-809c-a039-ea3c32b38e17" class=""></p>
+              </div>
+            </div>
+          </details>
+        </div>
+        <div style="display: contents" dir="auto">
+          <details open="">
+            <summary
+              style="
+                font-weight: 600;
+                font-size: 1.5em;
+                line-height: 1.3;
+                margin: 0;
+              "
+            >
+              8. Requisitos previos por parte de La Popular
+            </summary>
+            <div class="indented">
+              <div style="display: contents" dir="auto">
+                <p id="33cca02c-192a-80d9-802c-ef93fbc41671" class="">
+                  Para poder comenzar el desarrollo La Popular debe entregar los
+                  siguientes elementos:
+                </p>
+              </div>
+              <div style="display: contents" dir="auto">
+                <details open="">
+                  <summary
+                    style="
+                      font-weight: 600;
+                      font-size: 1.25em;
+                      line-height: 1.3;
+                      margin: 0;
+                    "
+                  >
+                    8.1 Identidad de la marca
+                  </summary>
+                  <div class="indented">
+                    <div style="display: contents" dir="auto">
+                      <ul
+                        id="33cca02c-192a-80b1-b6f3-fbdf79697bc2"
+                        class="bulleted-list"
+                      >
+                        <li style="list-style-type: disc">
+                          Logo en alta resolución (SVG o PNG con fondo
+                          transparente)
+                        </li>
+                      </ul>
+                    </div>
+                    <div style="display: contents" dir="auto">
+                      <ul
+                        id="33cca02c-192a-80f6-9c14-fb5b7d88c636"
+                        class="bulleted-list"
+                      >
+                        <li style="list-style-type: disc">
+                          Colores de la empresa en formato hex (ej.
+                          <code>#1F3F5J</code>)
+                        </li>
+                      </ul>
+                    </div>
+                    <div style="display: contents" dir="auto">
+                      <ul
+                        id="33cca02c-192a-80da-b9d9-cc3ea27ea1a1"
+                        class="bulleted-list"
+                      >
+                        <li style="list-style-type: disc">
+                          Tipografías utilizadas si las hay
+                        </li>
+                      </ul>
+                    </div>
+                    <div style="display: contents" dir="auto">
+                      <ul
+                        id="33cca02c-192a-80fd-9ca9-cd03fe326c0b"
+                        class="bulleted-list"
+                      >
+                        <li style="list-style-type: disc">
+                          Ejemplos de flyers o posts en redes si las hay
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </details>
+              </div>
+              <div style="display: contents" dir="auto">
+                <details open="">
+                  <summary
+                    style="
+                      font-weight: 600;
+                      font-size: 1.25em;
+                      line-height: 1.3;
+                      margin: 0;
+                    "
+                  >
+                    8.2 Copy y contenido de los mensajes
+                  </summary>
+                  <div class="indented">
+                    <div style="display: contents" dir="auto">
+                      <ul
+                        id="33cca02c-192a-8046-8c05-c835659fab1a"
+                        class="bulleted-list"
+                      >
+                        <li style="list-style-type: disc">
+                          Textos de los mensajes de WhatsApp tal como deben
+                          aparecer
+                        </li>
+                      </ul>
+                    </div>
+                    <div style="display: contents" dir="auto">
+                      <ul
+                        id="33cca02c-192a-80b1-a677-e01cc7dd5f98"
+                        class="bulleted-list"
+                      >
+                        <li style="list-style-type: disc">
+                          Texto de política de protección de datos
+                        </li>
+                      </ul>
+                    </div>
+                    <div style="display: contents" dir="auto">
+                      <ul
+                        id="33cca02c-192a-80a4-b53b-fbbc7df00ffd"
+                        class="bulleted-list"
+                      >
+                        <li style="list-style-type: disc">
+                          Nombre oficial com debe aparecer
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </details>
+              </div>
+              <div style="display: contents" dir="auto">
+                <details open="">
+                  <summary
+                    style="
+                      font-weight: 600;
+                      font-size: 1.25em;
+                      line-height: 1.3;
+                      margin: 0;
+                    "
+                  >
+                    8.3 Accesos y cuentas
+                  </summary>
+                  <div class="indented">
+                    <div style="display: contents" dir="auto">
+                      <ul
+                        id="33cca02c-192a-80fb-a986-fc191d779072"
+                        class="bulleted-list"
+                      >
+                        <li style="list-style-type: disc">
+                          Usuario y clave de WhatsApp Business
+                        </li>
+                      </ul>
+                    </div>
+                    <div style="display: contents" dir="auto">
+                      <ul
+                        id="33cca02c-192a-80cb-81a8-e64a966c2612"
+                        class="bulleted-list"
+                      >
+                        <li style="list-style-type: disc">
+                          Cuenta activa de Make
+                        </li>
+                      </ul>
+                    </div>
+                    <div style="display: contents" dir="auto">
+                      <ul
+                        id="33cca02c-192a-802f-a219-fc2a79c0b2a6"
+                        class="bulleted-list"
+                      >
+                        <li style="list-style-type: disc">
+                          Cuenta de Culqui con API activada
+                        </li>
+                      </ul>
+                    </div>
+                    <div style="display: contents" dir="auto">
+                      <ul
+                        id="33cca02c-192a-8016-b69e-fb30a29c2e65"
+                        class="bulleted-list"
+                      >
+                        <li style="list-style-type: disc">Dominio</li>
+                      </ul>
+                    </div>
+                  </div>
+                </details>
+              </div>
+              <div style="display: contents" dir="auto">
+                <details open="">
+                  <summary
+                    style="
+                      font-weight: 600;
+                      font-size: 1.25em;
+                      line-height: 1.3;
+                      margin: 0;
+                    "
+                  >
+                    8.4 Aclaración de features
+                  </summary>
+                  <div class="indented">
+                    <div style="display: contents" dir="auto">
+                      <ul
+                        id="33cca02c-192a-8092-ac5f-de1b3724c763"
+                        class="bulleted-list"
+                      >
+                        <li style="list-style-type: disc">
+                          Confirmación de las fechas de pagos de usuarios
+                        </li>
+                      </ul>
+                    </div>
+                    <div style="display: contents" dir="auto">
+                      <ul
+                        id="33cca02c-192a-80b2-b0a0-f0009c9df3bb"
+                        class="bulleted-list"
+                      >
+                        <li style="list-style-type: disc">
+                          Definición de las reglas del scoring
+                        </li>
+                      </ul>
+                    </div>
+                    <div style="display: contents" dir="auto">
+                      <ul
+                        id="33cca02c-192a-80ec-a627-c6387c53b816"
+                        class="bulleted-list"
+                      >
+                        <li style="list-style-type: disc">
+                          Definición de los diferentes inputs del form:
+                          <div style="display: contents" dir="auto">
+                            <ul
+                              id="33cca02c-192a-8005-a70c-ca61581fc637"
+                              class="bulleted-list"
+                            >
+                              <li style="list-style-type: circle">
+                                Hay una lista de los tipos de empleos que hay o
+                                es un input libre?
+                              </li>
+                            </ul>
+                          </div>
+                          <div style="display: contents" dir="auto">
+                            <ul
+                              id="33cca02c-192a-80b5-b6d3-fb3e88582255"
+                              class="bulleted-list"
+                            >
+                              <li style="list-style-type: circle">
+                                Hay rangos de antiguedad?
+                              </li>
+                            </ul>
+                          </div>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </details>
+              </div>
+            </div>
+          </details>
+        </div>
+        <div style="display: contents" dir="auto">
+          <p id="33cca02c-192a-8063-af53-e6f162a4fd8b" class=""></p>
+        </div>
+      </div>
+    </article>
+    <span class="sans" style="font-size: 14px; padding-top: 2em"></span>
+  </body>
+</html>
